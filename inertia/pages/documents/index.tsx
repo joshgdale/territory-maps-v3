@@ -289,7 +289,7 @@ function Documents({
           <S12 canDownload={canDownload} maps={maps} />
         </ColumnLayout.Column>
         <ColumnLayout.Column>
-          <DncWorksheet canDownload={canDownload} currentServiceYear={currentServiceYear} />
+          <DncWorksheet canDownload={canDownload} />
           <RecordsManagementCard
             recordsManagement={recordsManagement}
             currentServiceYear={currentServiceYear}

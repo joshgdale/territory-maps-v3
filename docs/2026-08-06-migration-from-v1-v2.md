@@ -36,7 +36,7 @@ Rebuild Territory Maps as **Adonis 7 + Inertia React** in `territory-maps-v3`, u
 - ~~Rurals (geo + What3Words + checkoff + CSV ingest) — see [`2026-08-06-rurals.md`](./2026-08-06-rurals.md)~~
 - End-to-end QA against dump data
 - Optional: restore v1 new-user Welcome banner (What’s New is a different feature)
-- Pre-prod hardening from [`2026-08-06-preprod-audit.md`](./2026-08-06-preprod-audit.md) (login limiter, working-note XSS escape, unique map code index, PDF multi-instance story, query SQL filters)
+- Pre-prod hardening from [`2026-08-06-preprod-audit.md`](./2026-08-06-preprod-audit.md) (working-note XSS, login limiter, unique map code, transactions, service-year dates)
 
 ## Update — pre-prod migration check (2026-08-06)
 

@@ -34,7 +34,7 @@ let jobQueue: Job[] = []
 export default class PdfGenService {
   async checkHealth() {
     try {
-      const endpoint = configureGotenberg()
+      configureGotenberg()
       await System.getHealth()
       return { ok: true }
     } catch (error) {

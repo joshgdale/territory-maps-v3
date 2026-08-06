@@ -88,6 +88,17 @@ export class MapTypeSchema extends BaseModel {
   declare name: string
 }
 
+export class RateLimitSchema extends BaseModel {
+  static $columns = ['expire', 'key', 'points'] as const
+  $columns = RateLimitSchema.$columns
+  @column()
+  declare expire: bigint | number | null
+  @column({ isPrimary: true })
+  declare key: string
+  @column()
+  declare points: number
+}
+
 export class RuralSchema extends BaseModel {
   static $columns = ['description', 'id', 'isComplete', 'latitude', 'longitude', 'mapId', 'what3Words'] as const
   $columns = RuralSchema.$columns

@@ -3,13 +3,19 @@ import Street from '#models/street'
 import StreetCategory from '#models/street_category'
 import { inject } from '@adonisjs/core'
 import { nanoid } from '#config/database'
+import db from '@adonisjs/lucid/services/db'
+import type { TransactionClientContract } from '@adonisjs/lucid/types/database'
 import { errors } from '@vinejs/vine'
 
 @inject()
 export default class StreetService {
-  async assertCategoriesBelongToCongregation(p: { congNumber: string; categoryIds: string[] }) {
+  async assertCategoriesBelongToCongregation(p: {
+    congNumber: string
+    categoryIds: string[]
+    trx?: TransactionClientContract
+  }) {
     if (p.categoryIds.length === 0) return
-    const found = await StreetCategory.query()
+    const found = await StreetCategory.query({ client: p.trx })
       .where('congregationNumber', p.congNumber)
       .whereIn('id', p.categoryIds)
     if (found.length !== p.categoryIds.length) {
@@ -25,28 +31,44 @@ export default class StreetService {
     name: string
     categories: string | null
   }) {
-    const map = await Map.query()
+    return db.transaction(async (trx) => {
+      const map = await Map.query({ client: trx })
+        .where('id', p.mapId)
+        .where('congregationNumber', p.congNumber)
+        .firstOrFail()
+      const categoryIds = p.categories ? p.categories.split(',').filter(Boolean) : []
+      await this.assertCategoriesBelongToCongregation({
+        congNumber: p.congNumber,
+        categoryIds,
+        trx,
+      })
+      const street = await Street.create(
+        {
+          id: nanoid(),
+          mapId: map.id,
+          name: p.name,
+          isComplete: false,
+        },
+        { client: trx }
+      )
+      if (categoryIds.length > 0) {
+        await street.useTransaction(trx).related('categories').attach(categoryIds)
+      }
+      return street
+    })
+  }
+
+  async getStreet(p: {
+    congNumber: string
+    mapId: string
+    streetId: string
+    trx?: TransactionClientContract
+  }) {
+    await Map.query({ client: p.trx })
       .where('id', p.mapId)
       .where('congregationNumber', p.congNumber)
       .firstOrFail()
-    const categoryIds = p.categories ? p.categories.split(',').filter(Boolean) : []
-    await this.assertCategoriesBelongToCongregation({
-      congNumber: p.congNumber,
-      categoryIds,
-    })
-    const street = await Street.create({
-      id: nanoid(),
-      mapId: map.id,
-      name: p.name,
-      isComplete: false,
-    })
-    if (categoryIds.length > 0) await street.related('categories').attach(categoryIds)
-    return street
-  }
-
-  async getStreet(p: { congNumber: string; mapId: string; streetId: string }) {
-    await Map.query().where('id', p.mapId).where('congregationNumber', p.congNumber).firstOrFail()
-    return Street.query()
+    return Street.query({ client: p.trx })
       .where('id', p.streetId)
       .where('mapId', p.mapId)
       .preload('categories')
@@ -76,16 +98,20 @@ export default class StreetService {
     name: string
     categories: string | null
   }) {
-    const street = await this.getStreet(p)
-    const categoryIds = p.categories ? p.categories.split(',').filter(Boolean) : []
-    await this.assertCategoriesBelongToCongregation({
-      congNumber: p.congNumber,
-      categoryIds,
+    return db.transaction(async (trx) => {
+      const street = await this.getStreet({ ...p, trx })
+      const categoryIds = p.categories ? p.categories.split(',').filter(Boolean) : []
+      await this.assertCategoriesBelongToCongregation({
+        congNumber: p.congNumber,
+        categoryIds,
+        trx,
+      })
+      street.useTransaction(trx)
+      street.name = p.name
+      await street.save()
+      await street.related('categories').sync(categoryIds)
+      return street
     })
-    street.name = p.name
-    await street.save()
-    await street.related('categories').sync(categoryIds)
-    return street
   }
 
   async deleteStreet(p: { congNumber: string; mapId: string; streetId: string }) {
@@ -110,7 +136,7 @@ export default class StreetService {
     return street
   }
 
-  async clearStreetStatusByMapId(p: { mapId: string }) {
-    await Street.query().where('mapId', p.mapId).update({ isComplete: false })
+  async clearStreetStatusByMapId(p: { mapId: string; trx?: TransactionClientContract }) {
+    await Street.query({ client: p.trx }).where('mapId', p.mapId).update({ isComplete: false })
   }
 }

@@ -1,17 +1,11 @@
 import ActivityService from '#services/activity_service'
-import RuralService from '#services/rural_service'
-import StreetService from '#services/street_service'
 import { CreateActivityValidator, UpdateActivityValidator } from '#validators/activity'
 import { inject } from '@adonisjs/core'
 import type { HttpContext } from '@adonisjs/core/http'
 
 @inject()
 export default class ActivityController {
-  constructor(
-    private activities: ActivityService,
-    private streets: StreetService,
-    private rurals: RuralService
-  ) {}
+  constructor(private activities: ActivityService) {}
 
   async store({ params, request, response, auth }: HttpContext) {
     const d = await request.validateUsing(CreateActivityValidator)
@@ -32,8 +26,6 @@ export default class ActivityController {
       ...d,
     })
     if (justBroughtBack) {
-      await this.streets.clearStreetStatusByMapId({ mapId: activity.mapId })
-      await this.rurals.clearRuralStatusByMapId({ mapId: activity.mapId })
       const { encoded } = await this.activities.getBroughtBackConfirmationMessage({
         congNumber: auth.user!.number,
         mapId: activity.mapId,

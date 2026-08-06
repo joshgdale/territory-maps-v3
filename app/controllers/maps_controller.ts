@@ -15,9 +15,9 @@ export default class MapsController {
     const limit = DateTime.now().minus({ months: 4 })
     return inertia.render('maps/index', { maps: maps.map(map => ({ ...map.serialize(), isOverdue: map.activities[0]?.status === 'OUT' && map.activities[0].outDate < limit })), mapTypes: mapTypes.map(t => t.serialize()), filters: { sort, type, status } })
   }
-  async show({ params, request, auth, inertia }: HttpContext) {
+  async show({ params, auth, inertia }: HttpContext) {
     const congNumber = auth.user!.number; const { map, imageUrl } = await this.maps.getExtendedMapById({ congNumber, mapId: params.id })
-    const shareableLink = await this.maps.getShareableLinkToMap({ request, mapId: map.id, congNumber })
+    const shareableLink = await this.maps.getShareableLinkToMap({ mapId: map.id, congNumber })
     const [shareMessage, mapTypes, streetCategories] = await Promise.all([
       this.maps.getShareMessageToMap({ mapId: map.id, congNumber, link: shareableLink }),
       MapType.query().where('congregationNumber', congNumber),

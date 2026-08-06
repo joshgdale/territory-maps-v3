@@ -1,8 +1,12 @@
 import Activity from '#models/activity'
 import Congregation from '#models/congregation'
 import Map from '#models/map'
+import RuralService from '#services/rural_service'
+import StreetService from '#services/street_service'
 import { nanoid } from '#config/database'
 import { inject } from '@adonisjs/core'
+import db from '@adonisjs/lucid/services/db'
+import type { TransactionClientContract } from '@adonisjs/lucid/types/database'
 import { DateTime } from 'luxon'
 
 function toDateTime(value: Date | DateTime): DateTime {
@@ -11,6 +15,11 @@ function toDateTime(value: Date | DateTime): DateTime {
 
 @inject()
 export default class ActivityService {
+  constructor(
+    private streets: StreetService,
+    private rurals: RuralService
+  ) {}
+
   async addActivityToMap(p: {
     congNumber: string
     mapId: string
@@ -35,9 +44,20 @@ export default class ActivityService {
     })
   }
 
-  async getActivity(p: { congNumber: string; mapId: string; activityId: string }) {
-    await Map.query().where('id', p.mapId).where('congregationNumber', p.congNumber).firstOrFail()
-    return Activity.query().where('id', p.activityId).where('mapId', p.mapId).firstOrFail()
+  async getActivity(p: {
+    congNumber: string
+    mapId: string
+    activityId: string
+    trx?: TransactionClientContract
+  }) {
+    await Map.query({ client: p.trx })
+      .where('id', p.mapId)
+      .where('congregationNumber', p.congNumber)
+      .firstOrFail()
+    return Activity.query({ client: p.trx })
+      .where('id', p.activityId)
+      .where('mapId', p.mapId)
+      .firstOrFail()
   }
 
   async updateActivity(p: {
@@ -49,18 +69,27 @@ export default class ActivityService {
     outDate: Date | DateTime
     publisher: string
   }) {
-    const activity = await this.getActivity(p)
-    const justBroughtBack = !activity.inDate && !!p.inDate
-    const inDate = p.inDate ? toDateTime(p.inDate) : null
-    activity.merge({
-      outDate: toDateTime(p.outDate),
-      inDate,
-      publisher: p.publisher,
-      notes: p.notes,
-      status: inDate ? 'IN' : 'OUT',
+    return db.transaction(async (trx) => {
+      const activity = await this.getActivity({ ...p, trx })
+      const justBroughtBack = !activity.inDate && !!p.inDate
+      const inDate = p.inDate ? toDateTime(p.inDate) : null
+      activity.useTransaction(trx)
+      activity.merge({
+        outDate: toDateTime(p.outDate),
+        inDate,
+        publisher: p.publisher,
+        notes: p.notes,
+        status: inDate ? 'IN' : 'OUT',
+      })
+      await activity.save()
+
+      if (justBroughtBack) {
+        await this.streets.clearStreetStatusByMapId({ mapId: activity.mapId, trx })
+        await this.rurals.clearRuralStatusByMapId({ mapId: activity.mapId, trx })
+      }
+
+      return { activity, justBroughtBack }
     })
-    await activity.save()
-    return { activity, justBroughtBack }
   }
 
   async deleteActivity(p: { congNumber: string; mapId: string; activityId: string }) {

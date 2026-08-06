@@ -8,3 +8,4 @@
 /// <reference path="../../config/drive.ts" />
 /// <reference path="../../config/hash.ts" />
 /// <reference path="../../config/logger.ts" />
+/// <reference path="../../config/limiter.ts" />

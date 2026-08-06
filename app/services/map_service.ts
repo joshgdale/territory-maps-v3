@@ -3,12 +3,27 @@ import Congregation from '#models/congregation'
 import Map from '#models/map'
 import MapType from '#models/map_type'
 import { nanoid } from '#config/database'
+import env from '#start/env'
 import { inject } from '@adonisjs/core'
 import type { MultipartFile } from '@adonisjs/core/bodyparser'
-import type { HttpRequest } from '@adonisjs/core/http'
 import drive from '@adonisjs/drive/services/main'
 import { errors } from '@vinejs/vine'
 import { DateTime } from 'luxon'
+
+function isUniqueViolation(error: unknown) {
+  return (
+    typeof error === 'object' &&
+    error !== null &&
+    'code' in error &&
+    (error as { code: string }).code === 'ER_DUP_ENTRY'
+  )
+}
+
+function mapCodeTakenError() {
+  return new errors.E_VALIDATION_ERROR([
+    { field: 'code', message: 'Map code already in use', rule: 'unique' },
+  ])
+}
 
 @inject()
 export default class MapService {
@@ -35,22 +50,29 @@ export default class MapService {
     if (
       await Map.query().where('congregationNumber', p.congNumber).where('code', p.code).first()
     ) {
-      throw new errors.E_VALIDATION_ERROR([
-        { field: 'code', message: 'Map code already in use', rule: 'unique' },
-      ])
+      throw mapCodeTakenError()
     }
     await this.assertMapTypeBelongsToCongregation({ congNumber: p.congNumber, typeId: p.type })
     if (!p.image.extname) throw new Error('Uploaded file has no extension')
     const imageName = `file-${nanoid()}.${p.image.extname}`
     await p.image.moveToDisk(`uploads/${p.congNumber}/${imageName}`, 'spaces')
-    return Map.create({
-      id: nanoid(),
-      name: p.name,
-      code: p.code,
-      typeId: p.type,
-      imageName,
-      congregationNumber: p.congNumber,
-    })
+    try {
+      return await Map.create({
+        id: nanoid(),
+        name: p.name,
+        code: p.code,
+        typeId: p.type,
+        imageName,
+        congregationNumber: p.congNumber,
+      })
+    } catch (error) {
+      await drive
+        .use('spaces')
+        .delete(`uploads/${p.congNumber}/${imageName}`)
+        .catch(() => undefined)
+      if (isUniqueViolation(error)) throw mapCodeTakenError()
+      throw error
+    }
   }
 
   async updateMap(p: {
@@ -69,25 +91,42 @@ export default class MapService {
       map.code !== p.code &&
       (await Map.query().where('congregationNumber', p.congNumber).where('code', p.code).first())
     ) {
-      throw new errors.E_VALIDATION_ERROR([
-        { field: 'code', message: 'Map code already in use', rule: 'unique' },
-      ])
+      throw mapCodeTakenError()
     }
     await this.assertMapTypeBelongsToCongregation({ congNumber: p.congNumber, typeId: p.type })
+
+    const previousImageName = map.imageName
     let imageName = map.imageName
+    let uploadedNewImage = false
+
     if (p.image) {
       if (!p.image.extname) throw new Error('Uploaded file has no extension')
       imageName = `file-${nanoid()}.${p.image.extname}`
       await p.image.moveToDisk(`uploads/${p.congNumber}/${imageName}`, 'spaces')
-      if (map.imageName) {
+      uploadedNewImage = true
+    }
+
+    try {
+      map.merge({ name: p.name, code: p.code, typeId: p.type, imageName })
+      await map.save()
+    } catch (error) {
+      if (uploadedNewImage && imageName) {
         await drive
           .use('spaces')
-          .delete(`uploads/${p.congNumber}/${map.imageName}`)
+          .delete(`uploads/${p.congNumber}/${imageName}`)
           .catch(() => undefined)
       }
+      if (isUniqueViolation(error)) throw mapCodeTakenError()
+      throw error
     }
-    map.merge({ name: p.name, code: p.code, typeId: p.type, imageName })
-    await map.save()
+
+    if (uploadedNewImage && previousImageName && previousImageName !== imageName) {
+      await drive
+        .use('spaces')
+        .delete(`uploads/${p.congNumber}/${previousImageName}`)
+        .catch(() => undefined)
+    }
+
     return map
   }
   async deleteMap(p: { congNumber: string; mapId: string }) {
@@ -111,7 +150,11 @@ export default class MapService {
         : null,
     }
   }
-  async getShareableLinkToMap(p: { request: HttpRequest; mapId: string; congNumber: string }) { const c = await Congregation.findByOrFail('number', p.congNumber); return `${p.request.protocol()}://${p.request.host()}/go?m=${p.mapId}&t=${encodeURIComponent(c.securityToken)}` }
+  async getShareableLinkToMap(p: { mapId: string; congNumber: string }) {
+    const c = await Congregation.findByOrFail('number', p.congNumber)
+    const base = env.get('APP_URL').replace(/\/$/, '')
+    return `${base}/go?m=${p.mapId}&t=${encodeURIComponent(c.securityToken)}`
+  }
   async getShareMessageToMap(p: { mapId: string; congNumber: string; link: string }) {
     const [c, map] = await Promise.all([Congregation.findByOrFail('number', p.congNumber), this.getBasicMapById(p)])
     return encodeURI((c.shareMessage || '').replaceAll('{name}', map.name).replaceAll('{code}', map.code).replaceAll('{link}', p.link)).replace(/\?/g, '%3F').replace(/&/g, '%26')

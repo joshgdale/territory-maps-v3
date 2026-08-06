@@ -2,6 +2,7 @@ import Map from '#models/map'
 import Rural from '#models/rural'
 import { nanoid } from '#config/database'
 import { inject } from '@adonisjs/core'
+import type { TransactionClientContract } from '@adonisjs/lucid/types/database'
 
 @inject()
 export default class RuralService {
@@ -88,8 +89,8 @@ export default class RuralService {
     return rural
   }
 
-  async clearRuralStatusByMapId(p: { mapId: string }) {
-    await Rural.query().where('mapId', p.mapId).update({ isComplete: false })
+  async clearRuralStatusByMapId(p: { mapId: string; trx?: TransactionClientContract }) {
+    await Rural.query({ client: p.trx }).where('mapId', p.mapId).update({ isComplete: false })
   }
 }
 

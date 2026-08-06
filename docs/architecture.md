@@ -23,7 +23,11 @@ Public map access uses `Congregation.securityToken` query param `?t=`.
 
 **Session:** age `2h`, `httpOnly` / `secure` (prod) / `sameSite: 'lax'`. CSRF via Shield. Remember-me is **not** enabled (`useRememberMeTokens: false`) — same effective behaviour as v1 (UI existed, session maxAge was disabled).
 
-**Pre-prod notes:** login has no rate limiter yet; map images on Spaces are `visibility: 'public'`; PDF jobs are in-memory (single process). See [`2026-08-06-preprod-audit.md`](./2026-08-06-preprod-audit.md).
+**Login rate limit:** `@adonisjs/limiter` multi-limiter on failed attempts (IP + IP/congregation). Store via `LIMITER_STORE` (`memory` or `database`).
+
+**Coolify / reverse proxy:** `trustProxy: 'loopback, uniquelocal'` in `config/app.ts` so client IP and HTTPS work behind Traefik. Share links use `APP_URL`. See [`2026-08-06-coolify.md`](./2026-08-06-coolify.md).
+
+**Pre-prod notes:** map images on Spaces are `visibility: 'public'`; PDF jobs are in-memory (single process). See [`2026-08-06-preprod-audit.md`](./2026-08-06-preprod-audit.md).
 
 ## UI patterns
 

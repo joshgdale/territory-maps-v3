@@ -58,6 +58,7 @@ export default defineConfig({
     () => import('@adonisjs/inertia/inertia_provider'),
     () => import('@adonisjs/auth/auth_provider'),
     () => import('@adonisjs/drive/drive_provider'),
+    () => import('@adonisjs/limiter/limiter_provider'),
     () => import('#providers/api_provider'),
   ],
 
@@ -73,6 +74,7 @@ export default defineConfig({
     () => import('#start/routes'),
     () => import('#start/kernel'),
     () => import('#start/validator'),
+    () => import('#start/limiter'),
   ],
 
   /*

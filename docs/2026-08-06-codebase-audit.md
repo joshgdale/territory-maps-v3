@@ -21,21 +21,14 @@ Review of `territory-maps-v3` for bugs and AdonisJS 7 idioms (vs Remix/v1 leftov
 
 | Pri | Item | Notes |
 |-----|------|--------|
-| P1 | Unique index `(congregationNumber, code)` on Map | App-level unique only today |
-| P1 | Escape/sanitize working-note HTML | Map-link HTML is intentional; still XSS if content has other tags |
-| P1 | Login rate limiting | No `@adonisjs/limiter` on `POST /login` |
-| P2 | Lucid transformers for Map/Activity/WorkingNote | Prefer over ad-hoc `serialize()`; transformers already enabled in `adonisrc` |
-| P2 | Extract `SettingsService`; slim Documents S-13 builder into `DocumentService` | Controllers still talk to Lucid directly in places |
-| P2 | Bouncer policies for map ownership / public token | Replace scattered `where('congregationNumber')` |
-| P2 | Vine `unique` / `exists` rules | Move more domain checks into validators |
-| P2 | PDF job store | In-memory queue is single-process only — document or move to Redis/DB before multi-instance deploy |
-| P2 | Search / working-note N+1 | Prefer SQL `whereILike` and batch map-by-code |
-| P2 | Load-all maps+activities then JS filter | List, search, next-maps, S-13 — filter in SQL |
-| P2 | `db.transaction` on multi-step writes | Bring-back, street+categories, map upload |
-| P3 | Settings delete flashes | Bare 400+redirect when type/category still in use |
-| P3 | Login error mapping | Prefer auth exception over fake Vine validation error |
-| P3 | Share links from `APP_URL` | `getShareableLinkToMap` uses `request.host()` |
-| P3 | Remember-me | Disabled; implement Adonis tokens if product wants it |
+| P2 | Harden `getServiceYear` | Explicit Sept 1 → Aug 31 + inclusive compares |
+| P2 | Street public toggle token guard | Align with rurals validation |
+| P3 | Settings `withCount` | Perf polish |
+| P3 | Enable CSP | After XSS fix (XSS escape done) |
+
+Done (2026-08-06): working-note XSS escape + batched map lookups, login limiter, unique map code index, bring-back/street transactions, Coolify `trustProxy`, share links from `APP_URL`.
+
+Full checklist: [`2026-08-06-preprod-audit.md`](./2026-08-06-preprod-audit.md).
 
 ## Already in good shape
 

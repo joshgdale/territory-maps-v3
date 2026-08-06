@@ -145,16 +145,17 @@ export function DatePicker(props: IDatePicker) {
               <Popover.Panel
                 static
                 className="absolute z-50 mt-1 w-full overflow-auto rounded-lg border border-slate-700 bg-white text-sm shadow-lg focus:outline-none"
-                as={motion.div}
-                initial={{ y: '25%', opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                exit={{ y: '25%', opacity: 0 }}
-                transition={{
-                  type: 'spring',
-                  bounce: 0.3,
-                  duration: 0.4,
-                }}
               >
+                <motion.div
+                  initial={{ y: '25%', opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  exit={{ y: '25%', opacity: 0 }}
+                  transition={{
+                    type: 'spring',
+                    bounce: 0.3,
+                    duration: 0.4,
+                  }}
+                >
                 <div className="mt-2 text-center sm:mt-4 lg:col-start-8 lg:col-end-13 lg:row-start-1 xl:col-start-9">
                   <div className="flex items-center px-6">
                     <button
@@ -241,6 +242,7 @@ export function DatePicker(props: IDatePicker) {
                     </button>
                   </div>
                 </div>
+                </motion.div>
               </Popover.Panel>
             )}
           </AnimatePresence>

@@ -50,7 +50,8 @@ If starting empty (no dump): run `node ace migration:run` without bootstrap — 
 
 ## Indexes / integrity (known gaps)
 
-- Map code uniqueness is **app-level only** today — add `UNIQUE (congregationNumber, code)` before multi-user concurrent creates matter (see pre-prod audit).
+- Map codes: `UNIQUE (congregationNumber, code)` applied (`1786022000000_add_unique_map_congregation_code`)
+- Rate limits table for `@adonisjs/limiter` database store (`rate_limits`)
 - Consider `(status, outDate)` on `Activity` for overdue queries; `(mapId, outDate DESC)` for latest-activity patterns.
 
 ## Env keys

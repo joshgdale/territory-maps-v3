@@ -818,7 +818,7 @@ function ActivityPanel({
     const options = {
       preserveScroll: true,
       preserveState: true,
-      onSuccess: (page) => {
+      onSuccess: (page: { props: Record<string, unknown> }) => {
         const flash = page.props.flash as
           | {
               justBroughtBack?: boolean

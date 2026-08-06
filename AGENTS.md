@@ -7,7 +7,7 @@ Instructions for AI agents (Cursor, Claude, and others) working in this repo.
 1. This file (`AGENTS.md`)
 2. [`docs/architecture.md`](docs/architecture.md)
 3. [`docs/database.md`](docs/database.md)
-4. Recent dated notes under [`docs/`](docs/) (especially migration + [`docs/2026-08-06-preprod-audit.md`](docs/2026-08-06-preprod-audit.md))
+4. Recent dated notes under [`docs/`](docs/) (especially migration, Coolify, and [`docs/2026-08-06-preprod-audit.md`](docs/2026-08-06-preprod-audit.md))
 
 ## What this project is
 
