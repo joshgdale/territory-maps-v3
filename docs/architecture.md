@@ -25,7 +25,7 @@ Public map access uses `Congregation.securityToken` query param `?t=`.
 
 **Login rate limit:** `@adonisjs/limiter` multi-limiter on failed attempts (IP + IP/congregation). Store via `LIMITER_STORE` (`memory` or `database`).
 
-**Coolify / reverse proxy:** `trustProxy: 'loopback, uniquelocal'` in `config/app.ts` so client IP and HTTPS work behind Traefik. Share links use `APP_URL`. See [`2026-08-06-coolify.md`](./2026-08-06-coolify.md).
+**Coolify / reverse proxy:** `trustProxy: proxyAddr.compile(['loopback', 'uniquelocal'])` in `config/app.ts` so client IP and HTTPS work behind Traefik. Share links use `APP_URL`. See [`2026-08-06-coolify.md`](./2026-08-06-coolify.md).
 
 **Pre-prod notes:** map images on Spaces are `visibility: 'public'`; PDF jobs are in-memory (single process). See [`2026-08-06-preprod-audit.md`](./2026-08-06-preprod-audit.md).
 
