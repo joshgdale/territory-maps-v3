@@ -37,12 +37,13 @@ FROM node:24-alpine
 WORKDIR /app
 
 ENV NODE_ENV=production
-# Defaults only — override at runtime via Coolify / docker -e
+# Defaults only — override PORT/HOST at runtime via Coolify / docker -e
 ENV HOST=0.0.0.0
-ENV PORT=8080
+ENV PORT=3333
 
 COPY --from=production-deps /app/node_modules /app/node_modules
 COPY --from=build /app/build /app
 
-EXPOSE 8080
+# Metadata for tools that read EXPOSE; runtime listen port is always $PORT
+EXPOSE ${PORT}
 CMD ["node", "./bin/server.js"]
