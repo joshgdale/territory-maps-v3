@@ -9,6 +9,5 @@ tmp
 !.env.example
 .cursor
 docs
-tests
 *.md
 heworth-rurals.csv

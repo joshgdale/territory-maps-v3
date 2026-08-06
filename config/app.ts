@@ -1,7 +1,6 @@
 import env from '#start/env'
 import app from '@adonisjs/core/services/app'
 import { defineConfig } from '@adonisjs/core/http'
-import proxyAddr from 'proxy-addr'
 
 /**
  * The app URL can be used in various places where you want to create absolute
@@ -32,7 +31,7 @@ export const http = defineConfig({
    * request.ip() / HTTPS detection use X-Forwarded-* headers.
    * Required for login rate limiting and secure cookies behind Coolify.
    */
-  trustProxy: proxyAddr.compile(['loopback', 'uniquelocal']),
+  trustProxy: 'loopback, uniquelocal',
 
   /**
    * Enabling async local storage will let you access HTTP context

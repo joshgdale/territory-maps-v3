@@ -8,18 +8,19 @@ WORKDIR /app
 RUN apk add --no-cache python3 make g++
 
 # ==========================================
-# 2. Install All Dependencies (for building)
+# 2. Install All Dependencies (once)
 # ==========================================
+# Single install — BuildKit otherwise runs deps + production-deps in
+# parallel (two npm ci + two native compiles), which OOMs small Coolify hosts.
 FROM base AS deps
 COPY package.json package-lock.json ./
 RUN npm ci
 
 # ==========================================
-# 3. Install Production Dependencies Only
+# 3. Production node_modules (prune, don't reinstall)
 # ==========================================
-FROM base AS production-deps
-COPY package.json package-lock.json ./
-RUN npm ci --omit=dev
+FROM deps AS production-deps
+RUN npm prune --omit=dev
 
 # ==========================================
 # 4. Build Stage (Compiles TS / Vite assets)
