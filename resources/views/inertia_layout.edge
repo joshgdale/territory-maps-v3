@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html class="h-full w-full overflow-x-hidden bg-neutral-200 text-slate-800">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title inertia>
+      Territory Maps
+    </title>
+
+    @viteReactRefresh()
+    @vite(['inertia/app.tsx'])
+    @inertiaHead()
+    @stack('dumper')
+  </head>
+
+  <body class="h-full">
+    @inertia()
+  </body>
+</html>

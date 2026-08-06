@@ -1,0 +1,114 @@
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Territory Map Card (S-12)</title>
+    <style>
+      @font-face {
+        font-family: 'Lekton';
+        src: url('/Lekton-Bold.ttf');
+        font-weight: bold;
+        font-style: normal;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        font-family: ui-serif, Georgia, Cambria, 'Times New Roman', Times, serif;
+        padding: 0;
+        margin: 0;
+      }
+      .font-typewriter {
+        font-family: Lekton, sans-serif;
+      }
+      h1 {
+        display: block;
+        font-size: 1rem;
+        line-height: 1;
+        font-weight: 700;
+        text-align: center;
+        margin: 0;
+      }
+      .meta {
+        display: flex;
+        align-items: baseline;
+        flex-wrap: nowrap;
+        gap: 0.75rem;
+        margin-top: 1.4rem;
+        margin-left: 0.125rem;
+        font-size: 0.75rem;
+        line-height: 1;
+        white-space: nowrap;
+      }
+      .meta .label {
+        font-weight: 700;
+      }
+      .underline-value {
+        position: relative;
+        display: inline-block;
+      }
+      .underline-value .value {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 0;
+        text-align: center;
+      }
+      .map-image {
+        display: block;
+        height: 13rem;
+        margin: 1rem auto;
+      }
+      .notice {
+        display: block;
+        margin-top: 0.25rem;
+        text-align: justify;
+        font-size: 0.73rem;
+        line-height: 1.25;
+        font-weight: 700;
+      }
+      footer {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+      }
+      footer p {
+        display: block;
+        margin: 1rem 0 0;
+        font-size: 0.6em;
+      }
+      footer span + span {
+        padding-left: 1rem;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Territory Map Card</h1>
+    <p class="meta">
+      <span class="label">Locality</span>
+      <span class="underline-value">
+        <span>_________________________________</span>
+        <span class="value font-typewriter">{{ locality }}</span>
+      </span>
+      <span class="label">Terr. No.</span>
+      <span class="underline-value">
+        <span>___________</span>
+        <span class="value font-typewriter">{{ terrNo }}</span>
+      </span>
+    </p>
+
+    <img src="{{ imageUrl }}" alt="Territory map" class="map-image" />
+
+    <p class="notice">
+      Please keep this card in the envelope. Do not soil, mark, or bend it. Each time the territory
+      is covered, please inform the brother who cares for the territory files.
+    </p>
+    <footer>
+      <p>
+        <span>S-12-E</span>
+        <span>6/72</span>
+      </p>
+    </footer>
+  </body>
+</html>

@@ -1,0 +1,11 @@
+---
+description: Follow AGENTS.md and maintain docs/ for significant work
+alwaysApply: true
+---
+
+# Agent docs
+
+- Read and follow `AGENTS.md` at the repo root before making substantial changes.
+- Use `docs/architecture.md`, `docs/database.md`, and `docs/pdf.md` as the source of truth for stack and ops.
+- When completing a large migration or architectural change, add or update a dated markdown file under `docs/` (`YYYY-MM-DD-*.md`) and keep the living docs current.
+- Never commit secrets from `.env`.

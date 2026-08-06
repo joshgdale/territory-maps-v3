@@ -1,0 +1,140 @@
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Do Not Calls Worksheet</title>
+    <style>
+      @font-face {
+        font-family: 'Lekton';
+        src: url('/Lekton-Bold.ttf');
+        font-weight: bold;
+        font-style: normal;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        font-family: Arial, Helvetica, sans-serif;
+        padding: 4rem 3rem 1rem;
+        margin: 0;
+        color: #111;
+      }
+      @media print {
+        body {
+          padding: 0;
+        }
+      }
+      .font-typewriter {
+        font-family: Lekton, sans-serif;
+      }
+      h1 {
+        display: block;
+        font-size: 1.47rem;
+        line-height: 1.15;
+        font-weight: 700;
+        text-align: center;
+        text-transform: uppercase;
+        margin: 0;
+      }
+      .description {
+        display: block;
+        margin: 0.85rem auto 0;
+        max-width: 42rem;
+        font-size: 0.95rem;
+        line-height: 1.35;
+        text-align: center;
+        color: #333;
+      }
+      .category {
+        margin-top: 1.35rem;
+      }
+      .category + .category {
+        margin-top: 1.5rem;
+      }
+      .category-heading {
+        margin: 0 0 0.45rem;
+        font-size: 1.05rem;
+        font-weight: 700;
+        line-height: 1.2;
+      }
+      .items {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        border-top: 1px solid #111;
+      }
+      .item {
+        display: grid;
+        grid-template-columns: 1.15rem 1fr;
+        gap: 0.35rem;
+        align-items: start;
+        padding: 0.4rem 0.55rem;
+        border-bottom: 1px solid #111;
+        page-break-inside: avoid;
+      }
+      .item:nth-child(odd) {
+        border-right: 1px solid #111;
+      }
+      .tick {
+        display: block;
+        width: 0.85rem;
+        height: 0.85rem;
+        margin-top: 0.12rem;
+        border: 1.5px solid #111;
+        border-radius: 1px;
+      }
+      .address {
+        font-size: 0.88rem;
+        font-weight: 700;
+        line-height: 1.2;
+        word-break: break-word;
+      }
+      .details {
+        margin-top: 0.2rem;
+        font-size: 0.78rem;
+        line-height: 1.25;
+        color: #333;
+      }
+      .details span + span {
+        margin-left: 0.55rem;
+      }
+      .empty {
+        margin-top: 2rem;
+        text-align: center;
+        font-size: 1rem;
+        color: #444;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Do Not Calls Worksheet</h1>
+    <p class="description">
+      Addresses that have not been worked during the current service year. Use this sheet in the
+      field and tick each address once it has been worked.
+    </p>
+
+    @if(categories.length === 0)
+      <p class="empty">No Do Not Calls are due for this service year.</p>
+    @else
+      @each(category in categories)
+        <section class="category">
+          <h2 class="category-heading">{{ category.name }}</h2>
+          <div class="items">
+            @each(item in category.items)
+              <div class="item">
+                <span class="tick" aria-hidden="true"></span>
+                <div>
+                  <div class="address">{{ item.address }}</div>
+                  <div class="details font-typewriter">
+                    <span>Last Worked: {{ item.lastCalled }}</span>
+                    <span>Map: {{ item.mapName }} ({{ item.mapCode }})</span>
+                  </div>
+                </div>
+              </div>
+            @end
+          </div>
+        </section>
+      @end
+    @end
+  </body>
+</html>

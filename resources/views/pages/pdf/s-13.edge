@@ -1,0 +1,235 @@
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Territory Assignment Record (S-13)</title>
+    <style>
+      @font-face {
+        font-family: 'Lekton';
+        src: url('/Lekton-Bold.ttf');
+        font-weight: bold;
+        font-style: normal;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        font-family: Arial, Helvetica, sans-serif;
+        padding: 4rem 3rem 1rem;
+        margin: 0;
+      }
+      @media print {
+        body {
+          padding: 0;
+        }
+      }
+      .font-typewriter {
+        font-family: Lekton, sans-serif;
+      }
+      h1 {
+        display: block;
+        font-size: 1.47rem;
+        line-height: 1;
+        font-weight: 700;
+        text-align: center;
+        text-transform: uppercase;
+        margin: 0;
+      }
+      .service-year {
+        display: block;
+        margin-top: 1.4rem;
+        margin-left: 0.125rem;
+        font-size: 1.25rem;
+        line-height: 1;
+      }
+      .service-year > span + span {
+        margin-left: 0.75rem;
+      }
+      .service-year .label {
+        font-weight: 700;
+      }
+      .underline-value {
+        position: relative;
+        display: inline-block;
+      }
+      .underline-value .value {
+        position: absolute;
+        left: 0;
+        right: 0;
+        text-align: center;
+      }
+      table {
+        border: 5px solid black;
+        border-collapse: collapse;
+        margin-top: 1.3rem;
+        width: 100%;
+      }
+      thead {
+        background: #dadada;
+      }
+      th,
+      td {
+        border: 1px solid black;
+        font-weight: 400;
+      }
+      th {
+        padding: 0.6rem 0.75rem;
+        font-size: 0.95rem;
+        line-height: 1.3;
+      }
+      th.subhead {
+        padding: 0.125rem 0.75rem;
+        font-size: 0.85rem;
+        line-height: 1;
+      }
+      th.assigned {
+        padding-left: 0.75rem;
+        padding-right: 0.75rem;
+        padding-top: 0;
+        padding-bottom: 0;
+        line-height: 1.25;
+      }
+      th.thick-bottom,
+      td.thick-bottom {
+        border-bottom-width: 3px;
+      }
+      th.thick-right,
+      td.thick-right {
+        border-right-width: 5px;
+      }
+      th.medium-right,
+      td.medium-right {
+        border-right-width: 2px;
+      }
+      td {
+        padding: 0 0.25rem;
+        text-align: center;
+        line-height: 1;
+        height: 1.6rem;
+      }
+      tr {
+        page-break-inside: avoid;
+      }
+      .footnote {
+        display: block;
+        margin-top: 0.25rem;
+        font-size: 1.05rem;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Territory Assignment Record</h1>
+    <p class="service-year">
+      <span class="label">Service Year:</span>
+      <span class="underline-value">
+        <span>________</span>
+        <span class="value font-typewriter">{{ serviceYear }}</span>
+      </span>
+    </p>
+
+    <table>
+      <thead>
+        <tr>
+          <th rowspan="2" class="thick-bottom" style="page-break-inside: avoid">
+            Terr.<br />
+            no.
+          </th>
+          <th rowspan="2" class="thick-bottom thick-right" style="page-break-inside: avoid">
+            Last date<br />
+            completed*
+          </th>
+          <th colspan="2" class="assigned medium-right">Assigned to</th>
+          <th colspan="2" class="assigned medium-right">Assigned to</th>
+          <th colspan="2" class="assigned medium-right">Assigned to</th>
+          <th colspan="2" class="assigned medium-right">Assigned to</th>
+        </tr>
+        <tr>
+          <th class="subhead thick-bottom">
+            Date<br />
+            assigned
+          </th>
+          <th class="subhead thick-bottom medium-right">
+            Date<br />
+            completed
+          </th>
+          <th class="subhead thick-bottom">
+            Date<br />
+            assigned
+          </th>
+          <th class="subhead thick-bottom medium-right">
+            Date<br />
+            completed
+          </th>
+          <th class="subhead thick-bottom">
+            Date<br />
+            assigned
+          </th>
+          <th class="subhead thick-bottom medium-right">
+            Date<br />
+            completed
+          </th>
+          <th class="subhead thick-bottom">
+            Date<br />
+            assigned
+          </th>
+          <th class="subhead thick-bottom medium-right">
+            Date<br />
+            completed
+          </th>
+        </tr>
+      </thead>
+      <tbody class="font-typewriter">
+        @each(map in maps)
+          @let(mapPadCount = map.activities.length <= 4 ? 4 - map.activities.length : 0)
+          <tr style="page-break-inside: avoid">
+            <td rowspan="2" class="thick-bottom">{{ map.code }}</td>
+            <td rowspan="2" class="thick-bottom thick-right">{{ map.lastCompleted }}</td>
+            @each((activity, i) in map.activities.slice(0, 4))
+              <td colspan="2" class="medium-right">{{ activity.publisher }}</td>
+            @end
+            @each(i in Array.from({ length: mapPadCount }, (_, i) => i))
+              <td colspan="2" class="medium-right"></td>
+            @end
+          </tr>
+          <tr style="page-break-inside: avoid">
+            @each((activity) in map.activities.slice(0, 4))
+              <td class="thick-bottom">{{ activity.outDate }}</td>
+              <td class="thick-bottom medium-right">{{ activity.inDate }}</td>
+            @end
+            @each(i in Array.from({ length: mapPadCount }, (_, i) => i))
+              <td class="thick-bottom"></td>
+              <td class="thick-bottom medium-right"></td>
+            @end
+          </tr>
+        @end
+        @let(padCount = maps.length % 20 > 0 ? 20 - (maps.length % 20) : 0)
+        @each(i in Array.from({ length: padCount }, (_, i) => i))
+          <tr style="page-break-inside: avoid">
+            <td rowspan="2" class="thick-bottom"></td>
+            <td rowspan="2" class="thick-bottom thick-right"></td>
+            <td colspan="2" class="medium-right"></td>
+            <td colspan="2" class="medium-right"></td>
+            <td colspan="2" class="medium-right"></td>
+            <td colspan="2" class="medium-right"></td>
+          </tr>
+          <tr style="page-break-inside: avoid">
+            <td class="thick-bottom"></td>
+            <td class="thick-bottom medium-right"></td>
+            <td class="thick-bottom"></td>
+            <td class="thick-bottom medium-right"></td>
+            <td class="thick-bottom"></td>
+            <td class="thick-bottom medium-right"></td>
+            <td class="thick-bottom"></td>
+            <td class="thick-bottom medium-right"></td>
+          </tr>
+        @end
+      </tbody>
+    </table>
+
+    <p class="footnote">
+      *When beginning a new sheet, use this column to record the date on which each territory was
+      last completed.
+    </p>
+  </body>
+</html>
