@@ -122,6 +122,11 @@ export default defineConfig({
       reloadServer: false,
     },
     {
+      // PDF footers (Gotenberg) — read from disk, not Edge
+      pattern: 'resources/views/**/*.html',
+      reloadServer: false,
+    },
+    {
       pattern: 'public/**',
       reloadServer: false,
     },

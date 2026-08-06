@@ -4,7 +4,6 @@ import { Head, Link, useForm } from '@inertiajs/react'
 import { format, parseISO } from 'date-fns'
 import { useState } from 'react'
 import {
-  AppBarTools,
   Button,
   Card,
   ColumnLayout,
@@ -200,12 +199,6 @@ function Dashboard({
   return (
     <>
       <Head title="Dashboard" />
-      <AppBarTools>
-        <Button hasIcon onClick={() => openPanel('create')}>
-          <PlusIcon aria-hidden className="mr-2 h-5 w-5" />
-          <span>New</span>
-        </Button>
-      </AppBarTools>
 
       {whatsNew.length > 0 && (
         <div className="mb-4 flex flex-col gap-4 rounded-lg border border-violet-500 bg-violet-200 p-4 shadow-md sm:mb-6 sm:p-6 md:flex-row md:gap-6">
