@@ -166,11 +166,10 @@ function RuralItem({
           onChange={onToggle}
           className="h-6 w-6 shrink-0 rounded text-slate-700 disabled:opacity-60"
         />
-        <div className="flex min-w-0 max-w-full items-center gap-2">
+        <div className="flex min-w-0 max-w-full flex-col gap-0.5">
           <span className={`min-w-0 truncate ${completed ? 'line-through' : ''}`}>
             {rural.description}
           </span>
-          <span className="hidden text-slate-400 md:inline">•</span>
           <RuralMeta rural={rural} />
         </div>
       </div>
