@@ -108,7 +108,7 @@ export function RuralMeta({ rural }: { rural: Rural }) {
   if (!coords && !w3w) return null
 
   return (
-    <span className="min-w-0 truncate text-sm text-slate-500">
+    <span className="min-w-0 wrap-break-word text-sm text-slate-500">
       {coords}
       {coords && w3w ? ' · ' : null}
       {w3w}

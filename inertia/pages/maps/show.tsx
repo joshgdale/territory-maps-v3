@@ -101,20 +101,20 @@ function StreetItem({
 }) {
   return (
     <li
-      className={`flex items-center justify-between px-4 py-3 sm:px-6 ${
+      className={`flex items-start justify-between gap-3 px-4 py-3 sm:px-6 ${
         striped ? 'bg-slate-100' : 'bg-white'
       } ${completed ? 'text-slate-600' : 'text-black'}`}
     >
-      <div className="flex items-center gap-4 sm:gap-6">
+      <div className="flex min-w-0 flex-1 items-start gap-4 sm:gap-6">
         <input
           type="checkbox"
           checked={completed}
           disabled={pending}
           onChange={onToggle}
-          className="h-6 w-6 rounded text-slate-700 disabled:opacity-60"
+          className="mt-0.5 h-6 w-6 shrink-0 rounded text-slate-700 disabled:opacity-60"
         />
-        <div className="space-x-2">
-          <span className={`mr-4 ${completed ? 'line-through' : ''}`}>{street.name}</span>
+        <div className="flex min-w-0 flex-wrap items-center gap-2">
+          <span className={`wrap-break-word ${completed ? 'line-through' : ''}`}>{street.name}</span>
           {(street.categories ?? []).map((category) => (
             <span key={category.id} className="rounded-lg bg-slate-200 px-3 py-1 text-sm">
               {category.name}
@@ -122,7 +122,7 @@ function StreetItem({
           ))}
         </div>
       </div>
-      <div className="flex space-x-2">
+      <div className="flex shrink-0 space-x-2">
         <button
           type="button"
           title={`Update ${street.name}`}
@@ -154,26 +154,26 @@ function RuralItem({
 }) {
   return (
     <li
-      className={`flex items-center justify-between gap-3 px-4 py-3 sm:px-6 ${
+      className={`flex items-start justify-between gap-3 px-4 py-3 sm:px-6 ${
         striped ? 'bg-slate-100' : 'bg-white'
       } ${completed ? 'text-slate-600' : 'text-black'}`}
     >
-      <div className="flex min-w-0 flex-1 items-center gap-4 sm:gap-6">
+      <div className="flex min-w-0 flex-1 items-start gap-4 sm:gap-6">
         <input
           type="checkbox"
           checked={completed}
           disabled={pending}
           onChange={onToggle}
-          className="h-6 w-6 shrink-0 rounded text-slate-700 disabled:opacity-60"
+          className="mt-0.5 h-6 w-6 shrink-0 rounded text-slate-700 disabled:opacity-60"
         />
         <div className="flex min-w-0 max-w-full flex-col gap-0.5">
-          <span className={`min-w-0 truncate ${completed ? 'line-through' : ''}`}>
+          <span className={`min-w-0 wrap-break-word ${completed ? 'line-through' : ''}`}>
             {rural.description}
           </span>
           <RuralMeta rural={rural} />
         </div>
       </div>
-      <div className="flex shrink-0 items-center gap-1.5">
+      <div className="flex shrink-0 items-start gap-1.5">
         <RuralExternalLinks rural={rural} />
         <button
           type="button"
